@@ -15,9 +15,9 @@ from telegram.ext import (
     filters,
     ContextTypes,
 )
-from storage import NoteStorage
+from dbstorage import NoteStorage
 from utils import format_notes_response, format_help_message
-from config import BOT_TOKEN, NOTES_FILE
+from config import BOT_TOKEN
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ NOTING = 2
 
 class NoteBot:
     def __init__(self):
-        self.storage = NoteStorage(NOTES_FILE)
+        self.storage = NoteStorage("notes.db")
 
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle the /start command and display the menu."""
