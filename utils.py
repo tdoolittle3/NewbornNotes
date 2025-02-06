@@ -25,9 +25,11 @@ def format_help_message() -> str:
 
 /note <text> - Save a new note
 /ask <search term> - Search through your notes
+/summarize - Get an AI-generated summary of your notes
 /help - Show this help message
 
 Examples:
 /note Remember to buy milk
 /ask milk
+/summarize
 """

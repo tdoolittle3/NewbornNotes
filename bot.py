@@ -18,6 +18,8 @@ from telegram.ext import (
 from dbstorage import NoteStorage
 from utils import format_notes_response, format_help_message
 from config import BOT_TOKEN
+from notes_summarizer import NotesSummarizer
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +30,8 @@ NOTING = 2
 class NoteBot:
     def __init__(self):
         self.storage = NoteStorage("notes.db")
+        openai_key = os.environ.get("OPENAI_API_KEY")
+        self.summarizer = NotesSummarizer(self.storage, openai_key)
 
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle the /start command and display the menu."""
@@ -120,6 +124,12 @@ class NoteBot:
                 "❌ An error occurred while processing your request. Please try again."
             )
 
+    async def summarize(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Handle the /summarize command"""
+        user_id = update.effective_user.id
+        summary = self.summarizer.summarize_notes(user_id)
+        await update.message.reply_text(summary)
+
     async def set_bot_commands(self, application: Application):
         """Set up the bot menu buttons in Telegram's UI."""
         commands = [
@@ -127,6 +137,7 @@ class NoteBot:
             BotCommand("note", "Save a new note"),
             BotCommand("ask", "Search for a note"),
             BotCommand("help", "Show help message"),
+            BotCommand("summarize", "Get a summary of your notes"),
             BotCommand("cancel", "Cancel current action"),
         ]
 
@@ -149,6 +160,7 @@ class NoteBot:
             # Add command handlers
             application.add_handler(CommandHandler("start", self.start))
             application.add_handler(CommandHandler("help", self.help))
+            application.add_handler(CommandHandler("summarize", self.summarize))
 
             # Add conversation handler for /note command
             note_handler = ConversationHandler(
