@@ -36,8 +36,9 @@ class NoteBot:
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle the /start command and display the menu."""
         welcome_message = (
-            "👋 Welcome to NoteTaker Bot!\n\n"
-            "I can help you take and manage your notes.\n"
+            "👋 Welcome to BabyTracker Bot!\n\n"
+            "I can help you track your baby's activities like feeding, diaper changes, and sleep.\n"
+            "Use /note to record an activity and /ask to get insights about past activities.\n"
             f"{format_help_message()}"
         )
 
