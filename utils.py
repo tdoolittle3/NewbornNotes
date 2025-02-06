@@ -24,12 +24,7 @@ def format_help_message() -> str:
 🤖 Available commands:
 
 /note <text> - Save a new note
-/ask <search term> - Search through your notes
+/ask <search term> - Ask an AI agent about your notes
 /log - Show your last 10 notes
 /help - Show this help message
-
-Examples:
-/note Remember to buy milk
-/ask milk
-/summarize
 """
