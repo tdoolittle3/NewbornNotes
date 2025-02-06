@@ -12,7 +12,7 @@ def format_notes_response(notes: List[str]) -> str:
     """Format notes for display"""
     if not notes:
         return "No notes found."
-    
+
     response = "📝 Your Notes:\n\n"
     for i, note in enumerate(notes, 1):
         response += f"{i}. {note}\n"
@@ -25,11 +25,9 @@ def format_help_message() -> str:
 
 /note <text> - Save a new note
 /ask <search term> - Search through your notes
-/summarize - Get an AI-generated summary of your notes
 /help - Show this help message
 
 Examples:
 /note Remember to buy milk
 /ask milk
-/summarize
 """
