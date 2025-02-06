@@ -119,12 +119,6 @@ class NoteBot:
                 "❌ An error occurred while processing your request. Please try again."
             )
 
-    async def summarize(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Handle the /summarize command"""
-        user_id = update.effective_user.id
-        summary = self.summarizer.summarize_notes(user_id)
-        await update.message.reply_text(summary)
-
     async def log(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle the /log command - show last 10 notes"""
         user_id = update.effective_user.id
@@ -147,7 +141,6 @@ class NoteBot:
             BotCommand("note", "Save a new note"),
             BotCommand("ask", "Search for a note"),
             BotCommand("help", "Show help message"),
-            BotCommand("summarize", "Get a summary of your notes"),
             BotCommand("log", "Show last 10 notes"),
         ]
 
@@ -170,7 +163,6 @@ class NoteBot:
             # Add command handlers
             application.add_handler(CommandHandler("start", self.start))
             application.add_handler(CommandHandler("help", self.help))
-            application.add_handler(CommandHandler("summarize", self.summarize))
             application.add_handler(CommandHandler("log", self.log))
 
             # Add conversation handler for /note command
