@@ -130,6 +130,21 @@ class NoteBot:
         summary = self.summarizer.summarize_notes(user_id)
         await update.message.reply_text(summary)
 
+    async def log(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Handle the /log command - show last 10 notes"""
+        user_id = update.effective_user.id
+        notes = self.storage.get_notes(user_id)[:10]  # Get last 10 notes
+        
+        if not notes:
+            await update.message.reply_text("No notes found.")
+            return
+            
+        response = "📋 Your Last 10 Notes:\n\n"
+        for i, (note, timestamp) in enumerate(notes, 1):
+            response += f"{i}. [{timestamp}] {note}\n"
+        
+        await update.message.reply_text(response)
+
     async def set_bot_commands(self, application: Application):
         """Set up the bot menu buttons in Telegram's UI."""
         commands = [
@@ -138,6 +153,7 @@ class NoteBot:
             BotCommand("ask", "Search for a note"),
             BotCommand("help", "Show help message"),
             BotCommand("summarize", "Get a summary of your notes"),
+            BotCommand("log", "Show last 10 notes"),
             BotCommand("cancel", "Cancel current action"),
         ]
 
@@ -161,6 +177,7 @@ class NoteBot:
             application.add_handler(CommandHandler("start", self.start))
             application.add_handler(CommandHandler("help", self.help))
             application.add_handler(CommandHandler("summarize", self.summarize))
+            application.add_handler(CommandHandler("log", self.log))
 
             # Add conversation handler for /note command
             note_handler = ConversationHandler(
