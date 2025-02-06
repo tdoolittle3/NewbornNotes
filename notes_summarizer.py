@@ -1,4 +1,3 @@
-
 import openai
 import logging
 from typing import List, Optional
@@ -10,7 +9,7 @@ class NotesSummarizer:
     def __init__(self, note_storage: NoteStorage, openai_api_key: str):
         """Initialize with a NoteStorage instance and OpenAI API key."""
         self.note_storage = note_storage
-        self.client = openai.OpenAI(api_key=openai_api_key)
+        self.openai_api_key = openai_api_key
 
     def _format_notes(self, user_id: int) -> Optional[str]:
         """Retrieve and format a user's notes as a structured list."""
@@ -29,12 +28,13 @@ class NotesSummarizer:
         prompt = f"Summarize the following notes briefly:\n\n{notes_text}"
 
         try:
-            response = self.client.chat.completions.create(
+            openai.api_key = self.openai_api_key
+            response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=150
             )
-            return response.choices[0].message.content.strip()
+            return response["choices"][0]["message"]["content"].strip()
         except Exception as e:
             logger.error(f"Error summarizing notes: {str(e)}")
             return "Failed to summarize notes. Please try again later."
@@ -48,12 +48,13 @@ class NotesSummarizer:
         prompt = f"Based on the following notes, answer the question:\n\nNotes:\n{notes_text}\n\nQuestion: {question}"
 
         try:
-            response = self.client.chat.completions.create(
+            openai.api_key = self.openai_api_key
+            response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=200
             )
-            return response.choices[0].message.content.strip()
+            return response["choices"][0]["message"]["content"].strip()
         except Exception as e:
             logger.error(f"Error answering question: {str(e)}")
             return "Failed to process your question. Please try again later."
