@@ -23,7 +23,9 @@ class NoteStorage:
                 cursor.execute("""
                     CREATE TABLE IF NOT EXISTS notes (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        chat_id INTEGER NOT NULL,
                         user_id INTEGER NOT NULL,
+                        username TEXT NOT NULL,
                         note TEXT NOT NULL,
                         timestamp TEXT NOT NULL
                     )
@@ -32,41 +34,41 @@ class NoteStorage:
         except Exception as e:
             logger.error(f"Error initializing database: {str(e)}")
 
-    def add_note(self, user_id: int, note: str) -> bool:
-        """Add a note for a user with the current timestamp."""
+    def add_note(self, chat_id: int, user_id: int, username: str, note: str) -> bool:
+        """Add a note for a chat."""
         try:
             timestamp = datetime.utcnow().isoformat()  # Use UTC time for consistency
             with self._connect() as conn:
                 cursor = conn.cursor()
-                cursor.execute("INSERT INTO notes (user_id, note, timestamp) VALUES (?, ?, ?)", 
-                               (user_id, note, timestamp))
+                cursor.execute("INSERT INTO notes (chat_id, user_id, username, note, timestamp) VALUES (?, ?, ?, ?, ?)", 
+                               (chat_id, user_id, username, note, timestamp))
                 conn.commit()
             return True
         except Exception as e:
             logger.error(f"Error adding note: {str(e)}")
             return False
 
-    def get_notes(self, user_id: int) -> List[Tuple[str, str]]:
-        """Retrieve all notes for a specific user along with timestamps."""
+    def get_notes(self, chat_id: int) -> List[Tuple[str, str]]:
+        """Retrieve all notes for a specific chat along with timestamps."""
         try:
             with self._connect() as conn:
                 cursor = conn.cursor()
-                cursor.execute("SELECT note, timestamp FROM notes WHERE user_id = ? ORDER BY timestamp DESC", (user_id,))
+                cursor.execute("SELECT note, timestamp FROM notes WHERE chat_id = ? ORDER BY timestamp DESC", (chat_id,))
                 return cursor.fetchall()  # Returns list of (note, timestamp) tuples
         except Exception as e:
             logger.error(f"Error getting notes: {str(e)}")
             return []
 
-    def search_notes(self, user_id: int, query: str) -> List[Tuple[str, str]]:
+    def search_notes(self, chat_id: int, query: str) -> List[Tuple[str, str]]:
         """Search for notes containing a specific query, returning the note and timestamp."""
         try:
             with self._connect() as conn:
                 cursor = conn.cursor()
                 cursor.execute("""
                     SELECT note, timestamp FROM notes 
-                    WHERE user_id = ? AND note LIKE ? 
+                    WHERE chat_id = ? AND note LIKE ? 
                     ORDER BY timestamp DESC
-                """, (user_id, f"%{query}%"))
+                """, (chat_id, f"%{query}%"))
                 return cursor.fetchall()
         except Exception as e:
             logger.error(f"Error searching notes: {str(e)}")

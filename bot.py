@@ -61,8 +61,10 @@ class NoteBot:
             # If user provides note inline
             note_text = ' '.join(context.args)
             user_id = update.effective_user.id
+            chat_id = update.effective_chat.id
+            username = update.effective_user.username or update.effective_user.first_name
 
-            if self.storage.add_note(user_id, note_text):
+            if self.storage.add_note(chat_id, user_id, username, note_text):
                 await update.message.reply_text("✅ Note saved successfully!")
             else:
                 await update.message.reply_text("❌ Failed to save note. Please try again.")
@@ -118,16 +120,16 @@ class NoteBot:
 
     async def log(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle the /log command - show last 10 notes"""
-        user_id = update.effective_user.id
-        notes = self.storage.get_notes(user_id)[:10]  # Get last 10 notes
+        chat_id = update.effective_chat.id
+        notes = self.storage.get_notes(chat_id)[:10]  # Get last 10 notes
 
         if not notes:
-            await update.message.reply_text("No notes found.")
+            await update.message.reply_text("No notes found in this chat.")
             return
 
-        response = "📋 Your Last 10 Notes:\n\n"
-        for i, (note, timestamp) in enumerate(notes, 1):
-            response += f"{i}. [{timestamp}] {note}\n"
+        response = "📋 Last 10 Notes:\n\n"
+        for i, (note, timestamp, username) in enumerate(notes, 1):
+            response += f"{i}. [{timestamp}] {username}: {note}\n"
 
         await update.message.reply_text(response)
 
