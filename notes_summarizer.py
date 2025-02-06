@@ -45,7 +45,17 @@ class NotesSummarizer:
         if not notes_text:
             return "You have no notes to reference."
 
-        prompt = f"Based on the following notes, answer the question:\n\nNotes:\n{notes_text}\n\nQuestion: {question}"
+        prompt = f"""You are analyzing notes about baby/newborn activities like feeding, sleeping, diaper changes etc. 
+Organize these activities into a clear timeline and provide relevant insights.
+When answering questions, consider patterns and timing between activities.
+
+Notes:\n{notes_text}\n\nQuestion: {question}
+
+Remember to:
+- Note time gaps between activities
+- Group similar activities (feeding, sleeping, etc.)
+- Point out any patterns
+- Mention if something seems missing or irregular"""
 
         try:
             response = self.client.chat.completions.create(
