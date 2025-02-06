@@ -44,7 +44,7 @@ class NoteBot:
         # Create a custom keyboard for quick command access
         keyboard = [
             [KeyboardButton("/note"), KeyboardButton("/ask")],
-            [KeyboardButton("/help"), KeyboardButton("/cancel")]
+            [KeyboardButton("/help")]
         ]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
@@ -111,11 +111,6 @@ class NoteBot:
 
         return ConversationHandler.END  # End conversation
 
-    async def cancel(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Handle user canceling an interaction."""
-        await update.message.reply_text("❌ Action canceled.")
-        return ConversationHandler.END
-
     async def error_handler(self, update: object, context: ContextTypes.DEFAULT_TYPE):
         """Handle errors"""
         logger.error(f"Error occurred: {context.error}")
@@ -134,15 +129,15 @@ class NoteBot:
         """Handle the /log command - show last 10 notes"""
         user_id = update.effective_user.id
         notes = self.storage.get_notes(user_id)[:10]  # Get last 10 notes
-        
+
         if not notes:
             await update.message.reply_text("No notes found.")
             return
-            
+
         response = "📋 Your Last 10 Notes:\n\n"
         for i, (note, timestamp) in enumerate(notes, 1):
             response += f"{i}. [{timestamp}] {note}\n"
-        
+
         await update.message.reply_text(response)
 
     async def set_bot_commands(self, application: Application):
@@ -154,7 +149,6 @@ class NoteBot:
             BotCommand("help", "Show help message"),
             BotCommand("summarize", "Get a summary of your notes"),
             BotCommand("log", "Show last 10 notes"),
-            BotCommand("cancel", "Cancel current action"),
         ]
 
         # Set persistent commands (for menu button)
@@ -185,7 +179,7 @@ class NoteBot:
                 states={
                     NOTING: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.receive_note)],
                 },
-                fallbacks=[CommandHandler("cancel", self.cancel)],  # Optional cancel
+                fallbacks=[],
             )
             application.add_handler(note_handler)
 
@@ -195,7 +189,7 @@ class NoteBot:
                 states={
                     ASKING: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.receive_query)],
                 },
-                fallbacks=[CommandHandler("cancel", self.cancel)],  # Optional cancel
+                fallbacks=[],
             )
             application.add_handler(ask_handler)
 
