@@ -90,9 +90,7 @@ class NoteBot:
             # If user provides a query inline
             query = ' '.join(context.args)
             user_id = update.effective_user.id
-            matching_notes = self.storage.search_notes(user_id, query)
-
-            response = format_notes_response(matching_notes)
+            response = self.summarizer.ask_about_notes(user_id, query)
             await update.message.reply_text(response)
             return ConversationHandler.END  # End if query was provided inline
 
@@ -104,9 +102,7 @@ class NoteBot:
         """Handle follow-up input after /ask without a query."""
         query = update.message.text
         user_id = update.effective_user.id
-        matching_notes = self.storage.search_notes(user_id, query)
-
-        response = format_notes_response(matching_notes)
+        response = self.summarizer.ask_about_notes(user_id, query)
         await update.message.reply_text(response)
 
         return ConversationHandler.END  # End conversation
