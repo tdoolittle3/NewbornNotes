@@ -8,7 +8,7 @@ from telegram.ext import (
     filters,
     ContextTypes,
 )
-from storage import NoteStorage
+from dbstorage import NoteStorage
 from utils import format_notes_response, format_help_message
 from config import BOT_TOKEN
 from notes_summarizer import NotesSummarizer
@@ -22,7 +22,7 @@ NOTING = 2
 
 class NoteBot:
     def __init__(self):
-        self.storage = NoteStorage("notes.json")
+        self.storage = NoteStorage("notes.db")
         openai_key = os.environ.get("OPENAI_API_KEY")
         self.summarizer = NotesSummarizer(self.storage, openai_key)
 
