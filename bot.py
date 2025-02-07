@@ -71,7 +71,12 @@ class NoteBot:
 
             return ConversationHandler.END  # End if note was provided inline
 
-        # If no note provided, prompt the user
+        # Check if in group chat
+        if update.effective_chat.type != 'private':
+            await update.message.reply_text("ℹ️ In group chats, please use inline commands:\n/note your note text\n/ask your question")
+            return ConversationHandler.END
+
+        # If no note provided and in private chat, prompt the user
         await update.message.reply_text("📝 Please enter your note:")
         return NOTING  # Wait for user input
 
@@ -98,7 +103,12 @@ class NoteBot:
             await update.message.reply_text(response)
             return ConversationHandler.END  # End if query was provided inline
 
-        # If no query provided, prompt the user
+        # Check if in group chat
+        if update.effective_chat.type != 'private':
+            await update.message.reply_text("ℹ️ In group chats, please use inline commands:\n/note your note text\n/ask your question")
+            return ConversationHandler.END
+
+        # If no query provided and in private chat, prompt the user
         await update.message.reply_text("🤔 What would you like to ask about?")
         return ASKING  # Wait for user input
 
