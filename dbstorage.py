@@ -5,7 +5,9 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
+
 class NoteStorage:
+
     def __init__(self, db_path: str = "notes.db"):
         """Initialize the SQLite database connection and create table if needed."""
         self.db_path = db_path
@@ -34,14 +36,21 @@ class NoteStorage:
         except Exception as e:
             logger.error(f"Error initializing database: {str(e)}")
 
-    def add_note(self, chat_id: int, user_id: int, username: str, note: str) -> bool:
+    def add_note(self, chat_id: int, user_id: int, username: str,
+                 note: str) -> bool:
         """Add a note for a chat."""
         try:
-            timestamp = datetime.utcnow().isoformat()  # Use UTC time for consistency
+            logger.debug(
+                f"Adding note for chat {chat_id} with user {user_id} and username {username}"
+            )
+            logger.debug(chat_id, user_id, username, note)
+            timestamp = datetime.utcnow().isoformat(
+            )  # Use UTC time for consistency
             with self._connect() as conn:
                 cursor = conn.cursor()
-                cursor.execute("INSERT INTO notes (chat_id, user_id, username, note, timestamp) VALUES (?, ?, ?, ?, ?)", 
-                               (chat_id, user_id, username, note, timestamp))
+                cursor.execute(
+                    "INSERT INTO notes (chat_id, user_id, username, note, timestamp) VALUES (?, ?, ?, ?, ?)",
+                    (chat_id, user_id, username, note, timestamp))
                 conn.commit()
             return True
         except Exception as e:
@@ -53,8 +62,11 @@ class NoteStorage:
         try:
             with self._connect() as conn:
                 cursor = conn.cursor()
-                cursor.execute("SELECT note, timestamp FROM notes WHERE chat_id = ? ORDER BY timestamp DESC", (chat_id,))
-                return cursor.fetchall()  # Returns list of (note, timestamp) tuples
+                cursor.execute(
+                    "SELECT note, timestamp, username FROM notes WHERE chat_id = ? ORDER BY timestamp DESC",
+                    (chat_id, ))
+                return cursor.fetchall(
+                )  # Returns list of (note, timestamp) tuples
         except Exception as e:
             logger.error(f"Error getting notes: {str(e)}")
             return []
@@ -64,7 +76,8 @@ class NoteStorage:
         try:
             with self._connect() as conn:
                 cursor = conn.cursor()
-                cursor.execute("""
+                cursor.execute(
+                    """
                     SELECT note, timestamp FROM notes 
                     WHERE chat_id = ? AND note LIKE ? 
                     ORDER BY timestamp DESC

@@ -79,8 +79,9 @@ class NoteBot:
         """Handle follow-up input after /note without a message."""
         note_text = update.message.text
         user_id = update.effective_user.id
-
-        if self.storage.add_note(user_id, note_text):
+        chat_id = update.effective_chat.id
+        username = update.effective_user.username or update.effective_user.first_name
+        if self.storage.add_note(chat_id, user_id, username, note_text):
             await update.message.reply_text("✅ Note saved successfully!")
         else:
             await update.message.reply_text("❌ Failed to save note. Please try again.")
