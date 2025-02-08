@@ -43,7 +43,7 @@ class NoteStorage:
             logger.debug(
                 f"Adding note for chat {chat_id} with user {user_id} and username {username}"
             )
-            logger.debug(chat_id, user_id, username, note)
+
             timestamp = datetime.utcnow().isoformat(
             )  # Use UTC time for consistency
             with self._connect() as conn:

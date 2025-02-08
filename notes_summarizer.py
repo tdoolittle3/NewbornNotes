@@ -39,9 +39,9 @@ class NotesSummarizer:
             logger.error(f"Error summarizing notes: {str(e)}")
             return "Failed to summarize notes. Please try again later."
 
-    def ask_about_notes(self, user_id: int, question: str) -> Optional[str]:
+    def ask_about_notes(self, chat_id: int, question: str) -> Optional[str]:
         """Answer a user's question based on their stored notes using OpenAI."""
-        notes_text = self._format_notes(user_id)
+        notes_text = self._format_notes(chat_id)
         if not notes_text:
             return "You have no notes to reference."
 
