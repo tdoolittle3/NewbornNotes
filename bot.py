@@ -167,18 +167,8 @@ class NoteBot:
             async def post_init_callback(app: Application):
                 await self.set_bot_commands(app)
 
-            # Create application with post_init and reconnection settings
-            application = (
-                Application.builder()
-                .token(BOT_TOKEN)
-                .post_init(post_init_callback)
-                .connection_pool_size(8)  # Increase connection pool
-                .pool_timeout(30.0)  # Increase timeout
-                .connect_timeout(30.0)
-                .read_timeout(30.0)
-                .write_timeout(30.0)
-                .build()
-            )
+            # Create application with post_init
+            application = Application.builder().token(BOT_TOKEN).post_init(post_init_callback).build()
 
             # Add command handlers
             application.add_handler(CommandHandler("start", self.start))
